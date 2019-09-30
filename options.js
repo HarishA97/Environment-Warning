@@ -13,6 +13,7 @@ chrome.storage.sync.get({
       let ruleText = document.createTextNode(o);
       let x = document.createElement("a");
       x.innerText = "[x]";
+      x.onclick = 'delete_rule('+i.toString()+')';
       rule.appendChild(ruleText);
       rule.appendChild(x);
       li.appendChild(rule);
@@ -20,6 +21,20 @@ chrome.storage.sync.get({
     }
   }
 });
+
+function delete_rule(i) {
+  chrome.storage.sync.get({
+    rules: [],
+  }, function (items) {
+    let newItems = items.rules;
+    newItems.splice(i, 1);
+    chrome.storage.sync.set({
+      rules: newItems,
+    }, function () {
+      alert("Done");
+    });
+  });
+}
 
 function save_options() {
   let newText = document.getElementById('text').value;
@@ -41,13 +56,11 @@ function save_options() {
       });
     }else {
       let newItems = items.rules;
-      alert(newItems);
       newItems.push({
         text: newText,
         colour: newColour,
         domain: newDomain,
       });
-      alert("Waiting");
       chrome.storage.sync.set({
         rules: newItems,
       }, function () {
