@@ -1,25 +1,357 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Environment warning</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Environment Warning - Settings</title>
+  <style>
+    :root {
+      --primary-color: #4a6cf7;
+      --danger-color: #dc3545;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
+      --text-color: #2d3748;
+      --text-muted: #718096;
+      --border-color: #e2e8f0;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--bg-color);
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .container {
+      max-width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    h1 {
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+      font-size: 1.8rem;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      font-weight: normal;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin: 0;
+    }
+
+    .status-badge {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      background-color: #e9ecef;
+      color: #495057;
+    }
+
+    .pattern-list {
+      margin: 1rem 0;
+      min-height: 50px;
+    }
+
+    .pattern-item {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .pattern-item:last-child {
+      border-bottom: none;
+    }
+
+    .pattern-input {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #3a5bd9;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+    }
+
+    .btn-outline:hover {
+      background-color: #f1f5f9;
+    }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+      transform: translateY(-1px);
+    }
+
+    .btn-add {
+      margin-top: 0.5rem;
+      color: var(--primary-color);
+      background: none;
+      border: 1px dashed var(--primary-color);
+      width: 100%;
+      padding: 0.5rem;
+    }
+
+    .btn-add:hover {
+      background-color: rgba(74, 108, 247, 0.1);
+    }
+
+    .btn-icon {
+      margin-right: 0.5rem;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .status-message {
+      font-size: 0.9rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+      margin-left: auto;
+      transition: all 0.3s ease;
+      opacity: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    .status-message.show {
+      opacity: 1;
+      height: auto;
+      margin-top: 0.5rem;
+    }
+
+    .status-success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .status-error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .regex-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+
+    .environment-section {
+      margin-bottom: 2rem;
+    }
+
+    .environment-section h2 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+    }
+
+    .environment-section h2::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .production h2::before { background-color: var(--danger-color); }
+    .staging h2::before { background-color: var(--warning-color); }
+    .development h2::before { background-color: var(--success-color); }
+    .test h2::before { background-color: var(--primary-color); }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .actions {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+      
+      .status-message {
+        text-align: center;
+        margin: 0.5rem 0 0;
+      }
+    }
+  </style>
 </head>
 <body>
-<center>
-  <div style="text-align: left; width: 300px">
-    <form>
-      Text : <input style="width: 200px" id="text" type="text"><br><br><br>
-      Colour : <input id="colour" type="color"><br><br><br>
-      Domains : <textarea style="height: 150px; width: 200px" id="domain"></textarea><br><br><br>
+  <div class="container">
+    <header>
+      <h1>Environment Warning</h1>
+      <p class="subtitle">Configure URL patterns for different environments</p>
+    </header>
 
-      <button style="text-align: center;" id="submit">Submit</button>
-      <button style="text-align: center;" id="clear">Clear</button>
-    </form>
+    <div class="environment-section production">
+      <div class="card">
+        <div class="card-header">
+          <h2>Production Environment</h2>
+          <span class="status-badge" id="production-status">Matches: 0</span>
+        </div>
+        <p>URL patterns that indicate a production environment:</p>
+        <div class="pattern-list" id="production-patterns"></div>
+        <button id="add-production-pattern" class="btn btn-add">
+          <span class="btn-icon">+</span> Add Production Pattern
+        </button>
+      </div>
+    </div>
+
+    <div class="environment-section staging">
+      <div class="card">
+        <div class="card-header">
+          <h2>Staging Environment</h2>
+          <span class="status-badge" id="staging-status">Matches: 0</span>
+        </div>
+        <p>URL patterns that indicate a staging environment:</p>
+        <div class="pattern-list" id="staging-patterns"></div>
+        <button id="add-staging-pattern" class="btn btn-add">
+          <span class="btn-icon">+</span> Add Staging Pattern
+        </button>
+      </div>
+    </div>
+
+    <div class="environment-section development">
+      <div class="card">
+        <div class="card-header">
+          <h2>Development Environment</h2>
+          <span class="status-badge" id="development-status">Matches: 0</span>
+        </div>
+        <p>URL patterns that indicate a development environment:</p>
+        <div class="pattern-list" id="development-patterns"></div>
+        <button id="add-development-pattern" class="btn btn-add">
+          <span class="btn-icon">+</span> Add Development Pattern
+        </button>
+      </div>
+    </div>
+
+    <div class="environment-section test">
+      <div class="card">
+        <div class="card-header">
+          <h2>Test Environment</h2>
+          <span class="status-badge" id="test-status">Matches: 0</span>
+        </div>
+        <p>URL patterns that indicate a test/QA environment:</p>
+        <div class="pattern-list" id="test-patterns"></div>
+        <button id="add-test-pattern" class="btn btn-add">
+          <span class="btn-icon">+</span> Add Test Pattern
+        </button>
+      </div>
+    </div>
+
+    <div class="actions">
+      <div>
+        <button id="reset" class="btn btn-outline">
+          <span class="btn-icon">↻</span> Reset to Defaults
+        </button>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end;">
+        <div id="status" class="status-message"></div>
+        <button id="save" class="btn btn-primary">
+          <span class="btn-icon">💾</span> Save Settings
+        </button>
+      </div>
+    </div>
+
+    <p class="regex-hint">
+      <strong>Tip:</strong> Use regular expressions to match URLs. Example: <code>\.staging\.</code> or <code>^dev\..+\.com$</code>
+    </p>
   </div>
 
-  <div style="text-align: left; width: 300px">
-    <ol id="currentRules"></ol>
-  </div>
-</center>
-<script src="options.js"></script>
+  <script src="options.js" type="module"></script>
 </body>
 </html>
