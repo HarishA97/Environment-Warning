@@ -1,6 +1,6 @@
 {
   "name": "Environment Warning",
-  "version": "1.0",
+  "version": "2.0",
   "description": "Warns about the current environment (Production/Staging/Development)",
   "permissions": ["activeTab", "storage", "tabs", "scripting", "declarativeContent"],
   "host_permissions": ["<all_urls>"],
