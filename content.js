@@ -185,6 +185,34 @@ function checkPreviousBannerState() {
   return true;
 }
 
+// Helper function to check if URL matches any pattern
+async function isUrlMatchingAnyPattern(url) {
+  const data = await new Promise(resolve => {
+    chrome.storage.sync.get('envPatterns', resolve);
+  });
+  
+  const envPatterns = data.envPatterns || {};
+  
+  for (const patterns of Object.values(envPatterns)) {
+    if (!Array.isArray(patterns)) continue;
+    
+    for (const pattern of patterns) {
+      if (!pattern) continue;
+      
+      try {
+        const regex = new RegExp(pattern, 'i');
+        if (regex.test(url)) {
+          return true;
+        }
+      } catch (e) {
+        console.warn(`Invalid regex pattern: ${pattern}`, e);
+      }
+    }
+  }
+  
+  return false;
+}
+
 // Main initialization
 async function init() {
   // Wait for the document to be fully loaded
@@ -192,27 +220,36 @@ async function init() {
     await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
   }
 
-  // Detect environment and show banner if needed
+  // Detect environment
   const environment = await detectEnvironment();
   document.documentElement.setAttribute('data-env', environment);
   
-  // Show the banner for all environments including production
-  if (checkPreviousBannerState()) {
+  // Only show banner if URL matches a pattern and banner wasn't dismissed
+  const shouldShowBanner = await isUrlMatchingAnyPattern(window.location.href) && 
+                          checkPreviousBannerState();
+  
+  if (shouldShowBanner) {
     await showBanner(environment);
   }
 
   // Set up observer for single-page applications
   let lastUrl = location.href;
-  const observer = new MutationObserver(() => {
+  const observer = new MutationObserver(async () => {
     if (location.href !== lastUrl) {
       lastUrl = location.href;
       // Re-run detection when URL changes
-      detectEnvironment().then(newEnv => {
-        document.documentElement.setAttribute('data-env', newEnv);
-        if (checkPreviousBannerState()) {
-          showBanner(newEnv);
-        }
-      });
+      const newEnv = await detectEnvironment();
+      document.documentElement.setAttribute('data-env', newEnv);
+      
+      const shouldShowBanner = await isUrlMatchingAnyPattern(location.href) && 
+                              checkPreviousBannerState();
+      
+      if (shouldShowBanner) {
+        await showBanner(newEnv);
+      } else {
+        // Hide banner if URL doesn't match any patterns
+        banner.style.transform = 'translateY(-100%)';
+      }
     }
   });
 
